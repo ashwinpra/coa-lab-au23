@@ -1,3 +1,5 @@
+// Register bank 
+
 module regbank(rData1, rData2, wrData, sr1, sr2, dr, reset, write, clk);
     input clk, write, reset;
     input [4:0] sr1, sr2, dr;
@@ -9,18 +11,6 @@ module regbank(rData1, rData2, wrData, sr1, sr2, dr, reset, write, clk);
     
     assign rData1 = regfile[sr1];
     assign rData2 = regfile[sr2];
-
-    // hardcoding values for testing
-    initial begin
-        regfile[1] <= 5; 
-        regfile[2] <= 10;
-        regfile[3] <= 15;
-        regfile[4] <= 20;
-        regfile[5] <= 25;
-        regfile[6] <= 30;
-        regfile[7] <= 35;
-        regfile[8] <= 40;
-    end
     
     always @(posedge clk) begin
         if (reset) begin

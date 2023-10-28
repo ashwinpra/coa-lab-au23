@@ -37,6 +37,7 @@ module regbank_FPGA(in, out, btn, reset, clk);
     always @(posedge clk) begin
         // $display($time, " pe = %d", pe);
         // if (pe) begin
+            $display($time, "-------------dr = %d----------------", dr);
             case (state) 
                 0: begin
                     $display($time, " state 0, in = %b", in);
@@ -46,7 +47,7 @@ module regbank_FPGA(in, out, btn, reset, clk);
                     out <= 1;
                 end
                 1: begin
-                    $display($time, " state 1, got register number = %d, in = %b", dr, in);
+                    $display($time, " state 1, got register 1 number = %d, in = %b", dr, in);
                     // get LSB of data to write
                     wrData[15:0] <= in;
 
@@ -64,12 +65,12 @@ module regbank_FPGA(in, out, btn, reset, clk);
                     write <= 1;
 
                     // 2nd register write
-                    sr1 <= in[4:0];
+                    dr <= in[4:0];
 
                     out <= 4;
                 end
                 4: begin
-                    $display($time, " state 4, got register number = %d, in = %b", sr1, in);
+                    $display($time, " state 4, got register 2 number = %d, in = %b", dr, in);
                     write <= 0;
 
                     // get LSB of data to write
