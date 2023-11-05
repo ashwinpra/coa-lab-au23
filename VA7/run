@@ -1,0 +1,2 @@
+iverilog *.v
+./a.out > res.txt

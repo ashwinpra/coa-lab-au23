@@ -1,27 +1,40 @@
 // Register bank 
 
-module regbank(rData1, rData2, wrData, sr1, sr2, dr, reset, write, clk);
-    input clk, write, reset;
-    input [4:0] sr1, sr2, dr;
+module regbank(ins, rData1, rData2, wrData, Rs, Rt, Rd, reset, RegW, clk);
+    input [31:0] ins;
+    input clk, RegW, reset;
+    input [4:0] Rs, Rt, Rd;
     input [31:0] wrData;
     
     output [31:0] rData1, rData2;
     
-    reg [31:0] regfile[0:17]; // R0 - R15 + SP + PC
+    reg [31:0] regfile[0:15]; // R0 - R15 
     
-    assign rData1 = regfile[sr1];
-    assign rData2 = regfile[sr2];
+    assign rData1 = regfile[Rs];
+    assign rData2 = regfile[Rt];
+
+    initial begin 
+        regfile[0] <= 0;  regfile[1] <= 0;   regfile[2] <= 0;  regfile[3] <= 0;
+        regfile[4] <= 0;  regfile[5] <= 0;   regfile[6] <= 0;  regfile[7] <= 0;
+        regfile[8] <= 0;  regfile[9] <= 0;   regfile[10] <= 0; regfile[11] <= 0;
+        regfile[12] <= 0; regfile[13] <= 0;  regfile[14] <= 0; regfile[15] <= 0;
+    end
     
     always @(posedge clk) begin
+        regfile[0] <= 0;
+        // $monitor("ins = %b, reg[%d] = %d, reg[%d] = %d", ins, Rs, rData1, Rt, rData2);
+        // $monitor("regfile[0] = %d, regfile[1] = %d, regfile[2] = %d, regfile[3] = %d", regfile[0], regfile[1], regfile[2], regfile[3]);
+        // $monitor("regfile[4] = %d", regfile[4]);
+        // $monitor("regfile[2] = %d", regfile[2]);
+        // $monitor("ins = %b, Rs = %d, Rt = %d, Rd = %d, wrData = %d", ins, Rs, Rt, Rd, wrData);
         if (reset) begin
-            regfile[0] <= 32'h00000000;  regfile[1] <= 32'h00000000;   regfile[2] <= 32'h00000000;  regfile[3] <= 32'h00000000;
-            regfile[4] <= 32'h00000000;  regfile[5] <= 32'h00000000;   regfile[6] <= 32'h00000000;  regfile[7] <= 32'h00000000;
-            regfile[8] <= 32'h00000000;  regfile[9] <= 32'h00000000;   regfile[10] <= 32'h00000000; regfile[11] <= 32'h00000000;
-            regfile[12] <= 32'h00000000; regfile[13] <= 32'h00000000;  regfile[14] <= 32'h00000000; regfile[15] <= 32'h00000000;
-            regfile[16] <= 32'h00000000; regfile[17] <= 32'h00000000;  
+            regfile[0] <= 0;  regfile[1] <= 0;   regfile[2] <= 0;  regfile[3] <= 0;
+            regfile[4] <= 0;  regfile[5] <= 0;   regfile[6] <= 0;  regfile[7] <= 0;
+            regfile[8] <= 0;  regfile[9] <= 0;   regfile[10] <= 0; regfile[11] <= 0;
+            regfile[12] <= 0; regfile[13] <= 0;  regfile[14] <= 0; regfile[15] <= 0;
         end
-        if (write) begin
-            regfile[dr] <= wrData;
+        if (RegW) begin
+            regfile[Rd] <= wrData;
         end
     end
 endmodule

@@ -9,15 +9,15 @@ module alu (a,b,shamt,funct,clk,res);
     output reg [31:0] res;
 
     parameter 
-        ADD = 0,
-        SUB = 1,
-        AND = 2,
-        OR = 3,
-        XOR = 4,
-        NOT = 5,
-        SLA = 6,
-        SRA = 7, 
-        SRL = 8;
+        ADD = 1,
+        SUB = 2,
+        AND = 3,
+        OR = 4,
+        XOR = 5,
+        NOT = 6,
+        SLA = 7,
+        SRA = 8, 
+        SRL = 9;
 
     wire [31:0] add_out, sub_out, and_out, or_out, xor_out, not_out, sla_out, sra_out, srl_out;
 
@@ -36,7 +36,7 @@ module alu (a,b,shamt,funct,clk,res);
     always @(posedge clk)
     begin
         case(funct)
-            ADD: res <= add_out;
+            ADD: res <= add_out; 
             SUB: res <= sub_out;
             AND: res <= and_out;
             OR:  res <= or_out;

@@ -1,12 +1,16 @@
 // Control unit that outputs required control signals for each instruction
 
-module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, MemtoReg, StackOp);
+module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, MemtoReg, StackOp, updatePC);
+    input clk;
     input [5:0] opcode;
     output reg [2:0] BranchOp;
     output reg [3:0] ALUOp;
     output reg ALUSrc, MemR, MemW, RegW, RegDst, MemtoReg; 
     output reg [2:0] StackOp;
+    output reg updatePC;
 
+    reg [2:0] CS; 
+    reg [4:0] IS; // instruction state
 
     parameter 
         R_TYPE = 6'b000000,
@@ -41,24 +45,30 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
         NOP = 6'b010111,
         RET = 6'b011000;
 
-
     initial begin 
-        BranchOp <= 3'b000;
-        ALUOp <= 4'b0000;
-        ALUSrc <= 0;
-        MemR <= 0;
-        MemW <= 0;
-        RegW <= 0;
-        RegDst <= 0;
-        MemtoReg <= 0;
-        StackOp <= 3'b000;
+        CS = 0; 
+        IS = 0; 
+        BranchOp = 0; 
+        ALUOp = 0;
+        ALUSrc = 0;
+        MemR = 0;
+        MemW = 0;
+        RegW = 0;
+        RegDst = 0;
+        MemtoReg = 0;
+        StackOp = 0;
+        updatePC = 0;
     end
 
-
-
-    always @(*) begin
+    always @(posedge clk) begin
+        // $display("opcode = %b", opcode);
+        case (CS) 
+        0: begin 
+            updatePC <= 0;
+            CS <= 1;
+        end
+        1: begin
         case(opcode)
-
             // R-type arithmetic operations
             R_TYPE: begin
                 BranchOp <= 3'b000;
@@ -67,118 +77,148 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 1;
                 MemtoReg <= 0;
+                RegDst <= 1; 
                 StackOp <= 3'b000;
+
+                updatePC <= 1;
+                CS <= 0;
             end
 
             // I-type arithmetic operations
             ADDI: begin
                 BranchOp <= 3'b000;
-                ALUOp <= 4'b0001;
+                ALUOp <= opcode;
                 ALUSrc <= 1;
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
+
+                updatePC <= 1;
+                CS <= 0;
             end
 
             SUBI: begin
                 BranchOp <= 3'b000;
-                ALUOp <= 4'b0010;
+                ALUOp <= opcode;
                 ALUSrc <= 1;
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
+
+                updatePC <= 1;
+                CS <= 0;
             end
 
             ANDI: begin
                 BranchOp <= 3'b000;
-                ALUOp <= 4'b0011;
+                ALUOp <= opcode;
                 ALUSrc <= 1;
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
+
+                updatePC <= 1;
+                CS <= 0;
             end
 
             ORI: begin
                 BranchOp <= 3'b000;
-                ALUOp <= 4'b0100;
+                ALUOp <= opcode;
                 ALUSrc <= 1;
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
+
+                updatePC <= 1;
+                CS <= 0;
             end
 
             XORI: begin
                 BranchOp <= 3'b000;
-                ALUOp <= 4'b0101;
+                ALUOp <= opcode;
                 ALUSrc <= 1;
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
+
+                updatePC <= 1;
+                CS <= 0;
             end
 
             NOTI: begin
                 BranchOp <= 3'b000;
-                ALUOp <= 4'b0110;
+                ALUOp <= opcode;
                 ALUSrc <= 1;
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
+
+                updatePC <= 1;
+                CS <= 0;
             end
 
             SLAI: begin
                 BranchOp <= 3'b000;
-                ALUOp <= 4'b0111;
+                ALUOp <= opcode;
                 ALUSrc <= 1;
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
+
+                updatePC <= 1;
+                CS <= 0;
             end
 
             SRLI: begin
                 BranchOp <= 3'b000;
-                ALUOp <= 4'b1000;
+                ALUOp <= opcode;
                 ALUSrc <= 1;
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
+
+                updatePC <= 1;
+                CS <= 0;
             end
 
             SRAI: begin
                 BranchOp <= 3'b000;
-                ALUOp <= 4'b1001;
+                ALUOp <= opcode;
                 ALUSrc <= 1;
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
+
+                updatePC <= 1;
+                CS <= 0;
             end
 
 
@@ -189,9 +229,9 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 ALUSrc <= 0;        // not relevant
                 MemR <= 0;
                 MemW <= 0;
-                RegW <= 0;
-                RegDst <= 0;    
+                RegW <= 0;  
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
             end
 
@@ -201,9 +241,9 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 ALUSrc <= 0;        // not relevant
                 MemR <= 0;
                 MemW <= 0;
-                RegW <= 0;
-                RegDst <= 0;    
+                RegW <= 0; 
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
             end
 
@@ -214,8 +254,8 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 0;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
             end
 
@@ -226,35 +266,102 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 0;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
             end
 
 
             // I-type load and store operations
             LD: begin
-                BranchOp <= 3'b000;
-                ALUOp <= 4'b0001;   // ADD is required
-                ALUSrc <= 0;        // not relevant
-                MemR <= 1;
-                MemW <= 0;
-                RegW <= 1;
-                RegDst <= 0;    
-                MemtoReg <= 1;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin 
+                        BranchOp <= 3'b000;
+                        ALUOp <= 4'b0001;   // ADD is required
+                        ALUSrc <= 1;        // imm is used 
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
+
+                        IS <= 1; 
+                    end
+                    1: begin 
+                        // initiate memory read
+                        MemR <= 1;
+                        MemW <= 0;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // write to register
+                        MemR <= 0;
+                        MemtoReg <= 1;
+                        RegW <= 1;
+
+                        IS <= 3;
+                    end
+                    3: begin 
+                        // finish 
+                        MemtoReg <= 0;
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0; 
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= 4'b0001;   // ADD is required
+                // ALUSrc <= 1;        // imm is used 
+                // MemR <= 1;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 1;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
             end
 
             ST: begin
-                BranchOp <= 3'b000;
-                ALUOp <= 4'b0001;   // ADD is required
-                ALUSrc <= 0;      // not relevant
-                MemR <= 0;
-                MemW <= 1;
-                RegW <= 0;
-                RegDst <= 0;    
-                MemtoReg <= 0;
-                StackOp <= 3'b000;
+                case(IS) 
+                    0: begin 
+                        BranchOp <= 3'b000;
+                        ALUOp <= 4'b0001;   // ADD is required
+                        ALUSrc <= 1;      // imm is used 
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
+                        MemR <= 0;
+
+                        IS <= 1; 
+                    end
+                    1: begin 
+                        // buffer state to finish ALU operations
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // initiate memory write
+                        MemW <= 1;
+
+                        IS <= 3;
+                    end
+                    3: begin 
+                        // finish 
+                        MemW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+            
+                // BranchOp <= 3'b000;
+                // ALUOp <= 4'b0001;   // ADD is required
+                // ALUSrc <= 1;      // imm is used 
+                // MemR <= 0;
+                // MemW <= 1;
+                // RegW <= 0;  
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
             end
 
             LDSP: begin
@@ -263,9 +370,9 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 ALUSrc <= 0;      // not relevant
                 MemR <= 1;
                 MemW <= 0;
-                RegW <= 1;
-                RegDst <= 0;    
+                RegW <= 1;   
                 MemtoReg <= 1;
+                RegDst <= 0;
                 StackOp <= 3'b000;
             end
 
@@ -275,22 +382,22 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 ALUSrc <= 0;      // not relevant
                 MemR <= 0;
                 MemW <= 1;
-                RegW <= 0;
-                RegDst <= 0;    
+                RegW <= 0; 
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
             end
 
-            // I-type move operation - check this
+            // I-type move operation - implemented similar to ADDI (Rt = Rs + 0)
             MOVE: begin
                 BranchOp <= 3'b000;
-                ALUOp <= 4'1111;  // not relevant
-                ALUSrc <= 0;      // not relevant
+                ALUOp <= 4'b0001;
+                ALUSrc <= 1;
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 0;    
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
             end
 
@@ -302,8 +409,8 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 MemR <= 0;
                 MemW <= 1;
                 RegW <= 0;
-                RegDst <= 0;
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b001;
             end
 
@@ -314,8 +421,8 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 MemR <= 1;
                 MemW <= 0;
                 RegW <= 1;
-                RegDst <= 0;
                 MemtoReg <= 1;
+                RegDst <= 0;
                 StackOp <= 3'b010;
             end
 
@@ -326,8 +433,8 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 MemR <= 0;
                 MemW <= 1;
                 RegW <= 0;
-                RegDst <= 0;
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b011;
             end
 
@@ -338,8 +445,8 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 MemR <= 1;
                 MemW <= 0;
                 RegW <= 0;
-                RegDst <= 0;
                 MemtoReg <= 1;
+                RegDst <= 0;
                 StackOp <= 3'b100;
             end
 
@@ -351,11 +458,590 @@ module control_unit(opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, M
                 MemR <= 0;
                 MemW <= 0;
                 RegW <= 0;
-                RegDst <= 0;
                 MemtoReg <= 0;
+                RegDst <= 0;
                 StackOp <= 3'b000;
             end
 
         endcase
+        end
+        endcase
     end
 endmodule
+
+
+
+    // always @(posedge clk) begin
+    //     case(CS) 
+    //         0: begin 
+    //             // do something for PC?
+    //             CS = 1;
+    //         end
+    //         1: begin 
+    //             case(opcode)
+    //                 R_TYPE: begin 
+    //                     case(IS)
+    //                         0: begin
+    //                             // arithmetic operation is initiated 
+    //                             BranchOp = 3'b000;
+    //                             StackOp = 3'b000;
+    //                             ALUOp = 4'b0000;
+    //                             ALUSrc = 0;
+    //                             MemR = 0;
+    //                             MemW = 0;
+
+    //                             IS = 1; 
+    //                         end 
+    //                         1: begin 
+    //                             // written to register
+    //                             RegW = 1;
+    //                             MemtoReg = 0;
+
+
+    //                             IS = 2; 
+    //                         end
+    //                         2: begin 
+    //                             // finish write operation 
+    //                             RegW = 0; 
+    //                             MemtoReg = 1; 
+
+    //                             IS = 3; 
+    //                         end
+    //                         3: begin
+    //                             // reset 
+    //                             CS = 0; 
+    //                             IS = 0; 
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 ADDI: begin 
+    //                     case(IS)
+    //                         0: begin
+    //                             // arithmetic operation is initiated
+    //                             BranchOp = 3'b000;
+    //                             StackOp = 3'b000;
+    //                             ALUOp = opcode;
+    //                             ALUSrc = 1; 
+    //                             MemR = 0; 
+    //                             MemW = 0; 
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // written to register
+    //                             RegW = 1; 
+    //                             MemtoReg = 0; 
+
+    //                             IS = 2; 
+    //                         end
+    //                         2: begin
+    //                             // finish write operation 
+    //                             RegW = 1; 
+    //                             MemtoReg = 1; 
+
+    //                             IS = 3;
+    //                         end
+    //                         3: begin
+    //                             // reset 
+    //                             CS = 0; 
+    //                             IS = 0; 
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 SUBI: begin 
+    //                     case(IS)
+    //                         0: begin
+    //                             // arithmetic operation is initiated
+    //                             BranchOp = 3'b000;
+    //                             StackOp = 3'b000;
+    //                             ALUOp = opcode;
+    //                             ALUSrc = 1; 
+    //                             MemR = 0; 
+    //                             MemW = 0; 
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // written to register
+    //                             RegW = 1; 
+    //                             MemtoReg = 0; 
+
+    //                             IS = 2; 
+    //                         end
+    //                         2: begin
+    //                             // finish write operation 
+    //                             RegW = 1; 
+    //                             MemtoReg = 1; 
+
+    //                             IS = 3;
+    //                         end
+    //                         3: begin
+    //                             // reset 
+    //                             CS = 0; 
+    //                             IS = 0; 
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 ANDI: begin 
+    //                     case(IS)
+    //                         0: begin
+    //                             // arithmetic operation is initiated
+    //                             BranchOp = 3'b000;
+    //                             StackOp = 3'b000;
+    //                             ALUOp = opcode;
+    //                             ALUSrc = 1; 
+    //                             MemR = 0; 
+    //                             MemW = 0; 
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // written to register
+    //                             RegW = 1; 
+    //                             MemtoReg = 0; 
+
+    //                             IS = 2; 
+    //                         end
+    //                         2: begin
+    //                             // finish write operation 
+    //                             RegW = 1; 
+    //                             MemtoReg = 1; 
+
+    //                             IS = 3;
+    //                         end
+    //                         3: begin
+    //                             // reset 
+    //                             CS = 0; 
+    //                             IS = 0; 
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 XORI: begin 
+    //                     case(IS)
+    //                         0: begin
+    //                             // arithmetic operation is initiated
+    //                             BranchOp = 3'b000;
+    //                             StackOp = 3'b000;
+    //                             ALUOp = opcode;
+    //                             ALUSrc = 1; 
+    //                             MemR = 0; 
+    //                             MemW = 0; 
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // written to register
+    //                             RegW = 1; 
+    //                             MemtoReg = 0; 
+
+    //                             IS = 2; 
+    //                         end
+    //                         2: begin
+    //                             // finish write operation 
+    //                             RegW = 1; 
+    //                             MemtoReg = 1; 
+
+    //                             IS = 3;
+    //                         end
+    //                         3: begin
+    //                             // reset 
+    //                             CS = 0; 
+    //                             IS = 0; 
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 NOTI: begin 
+    //                     case(IS)
+    //                         0: begin
+    //                             // arithmetic operation is initiated
+    //                             BranchOp = 3'b000;
+    //                             StackOp = 3'b000;
+    //                             ALUOp = opcode;
+    //                             ALUSrc = 1; 
+    //                             MemR = 0; 
+    //                             MemW = 0; 
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // written to register
+    //                             RegW = 1; 
+    //                             MemtoReg = 0; 
+
+    //                             IS = 2; 
+    //                         end
+    //                         2: begin
+    //                             // finish write operation 
+    //                             RegW = 1; 
+    //                             MemtoReg = 1; 
+
+    //                             IS = 3;
+    //                         end
+    //                         3: begin
+    //                             // reset 
+    //                             CS = 0; 
+    //                             IS = 0; 
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 SLAI: begin 
+    //                     case(IS)
+    //                         0: begin
+    //                             // arithmetic operation is initiated
+    //                             BranchOp = 3'b000;
+    //                             StackOp = 3'b000;
+    //                             ALUOp = opcode;
+    //                             ALUSrc = 1; 
+    //                             MemR = 0; 
+    //                             MemW = 0; 
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // written to register
+    //                             RegW = 1; 
+    //                             MemtoReg = 0; 
+
+    //                             IS = 2; 
+    //                         end
+    //                         2: begin
+    //                             // finish write operation 
+    //                             RegW = 1; 
+    //                             MemtoReg = 1; 
+
+    //                             IS = 3;
+    //                         end
+    //                         3: begin
+    //                             // reset 
+    //                             CS = 0; 
+    //                             IS = 0; 
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 SRLI: begin 
+    //                     case(IS)
+    //                         0: begin
+    //                             // arithmetic operation is initiated
+    //                             BranchOp = 3'b000;
+    //                             StackOp = 3'b000;
+    //                             ALUOp = opcode;
+    //                             ALUSrc = 1; 
+    //                             MemR = 0; 
+    //                             MemW = 0; 
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // written to register
+    //                             RegW = 1; 
+    //                             MemtoReg = 0; 
+
+    //                             IS = 2; 
+    //                         end
+    //                         2: begin
+    //                             // finish write operation 
+    //                             RegW = 1; 
+    //                             MemtoReg = 1; 
+
+    //                             IS = 3;
+    //                         end
+    //                         3: begin
+    //                             // reset 
+    //                             CS = 0; 
+    //                             IS = 0; 
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 SRAI: begin 
+    //                     case(IS)
+    //                         0: begin
+    //                             // arithmetic operation is initiated
+    //                             BranchOp = 3'b000;
+    //                             StackOp = 3'b000;
+    //                             ALUOp = opcode;
+    //                             ALUSrc = 1; 
+    //                             MemR = 0; 
+    //                             MemW = 0; 
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // written to register
+    //                             RegW = 1; 
+    //                             MemtoReg = 0; 
+
+    //                             IS = 2; 
+    //                         end
+    //                         2: begin
+    //                             // finish write operation 
+    //                             RegW = 1; 
+    //                             MemtoReg = 1; 
+
+    //                             IS = 3;
+    //                         end
+    //                         3: begin
+    //                             // reset 
+    //                             CS = 0; 
+    //                             IS = 0; 
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 BR: begin
+    //                     case(IS)
+    //                         0: begin
+    //                             BranchOp = 3'b001;
+    //                             ALUOp = 4'b0001;   // ADD is required
+    //                             ALUSrc = 0;        // not relevant
+    //                             MemR = 0;
+    //                             MemW = 0;
+    //                             RegW = 0;  
+    //                             MemtoReg = 0;
+    //                             StackOp = 3'b000;
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // reset
+    //                             CS = 0; 
+    //                             IS = 0;
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 BMI: begin
+    //                     case(IS)
+    //                         0: begin
+    //                             BranchOp = 3'b010;
+    //                             ALUOp = 4'b0001;   // ADD is required
+    //                             ALUSrc = 0;        // not relevant
+    //                             MemR = 0;
+    //                             MemW = 0;
+    //                             RegW = 0;  
+    //                             MemtoReg = 0;
+    //                             StackOp = 3'b000;
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // reset
+    //                             CS = 0; 
+    //                             IS = 0;
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 BPL: begin
+    //                     case(IS)
+    //                         0: begin
+    //                             BranchOp = 3'b011;
+    //                             ALUOp = 4'b0001;   // ADD is required
+    //                             ALUSrc = 0;        // not relevant
+    //                             MemR = 0;
+    //                             MemW = 0;
+    //                             RegW = 0;  
+    //                             MemtoReg = 0;
+    //                             StackOp = 3'b000;
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // reset
+    //                             CS = 0; 
+    //                             IS = 0;
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 BZ: begin
+    //                     case(IS)
+    //                         0: begin
+    //                             BranchOp = 3'b100;
+    //                             ALUOp = 4'b0001;   // ADD is required
+    //                             ALUSrc = 0;        // not relevant
+    //                             MemR = 0;
+    //                             MemW = 0;
+    //                             RegW = 0;  
+    //                             MemtoReg = 0;
+    //                             StackOp = 3'b000;
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin
+    //                             // reset
+    //                             CS = 0; 
+    //                             IS = 0;
+    //                             // do something for PC?
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 //         ST: begin
+    //                 //             BranchOp <= 3'b000;
+    //                 //             ALUOp <= 4'b0001;   // ADD is required
+    //                 //             ALUSrc <= 0;      // not relevant
+    //                 //             MemR <= 0;
+    //                 //             MemW <= 1;
+    //                 //             RegW <= 0;  
+    //                 //             MemtoReg <= 0;
+    //                 //             StackOp <= 3'b000;
+    //                 //         end
+
+    //                 //         LDSP: begin
+    //                 //             BranchOp <= 3'b000;
+    //                 //             ALUOp <= 4'b0001;   // ADD is required
+    //                 //             ALUSrc <= 0;      // not relevant
+    //                 //             MemR <= 1;
+    //                 //             MemW <= 0;
+    //                 //             RegW <= 1;   
+    //                 //             MemtoReg <= 1;
+    //                 //             StackOp <= 3'b000;
+    //                 //         end
+
+    //                 //         STSP: begin
+    //                 //             BranchOp <= 3'b000;
+    //                 //             ALUOp <= 4'b0001;   // ADD is required
+    //                 //             ALUSrc <= 0;      // not relevant
+    //                 //             MemR <= 0;
+    //                 //             MemW <= 1;
+    //                 //             RegW <= 0; 
+    //                 //             MemtoReg <= 0;
+    //                 //             StackOp <= 3'b000;
+    //                 //         end
+
+    //                 LD: begin
+    //                     case(IS)
+    //                         0: begin 
+    //                             BranchOp = 3'b000;
+    //                             ALUOp = 4'b0001;   // ADD is required
+    //                             ALUSrc = 0;        // not relevant
+    //                             MemW = 0; 
+    //                             StackOp = 0; 
+
+    //                             IS = 1; 
+    //                         end
+    //                         1: begin
+    //                             // initiate reading from memory
+    //                             MemR = 1;
+                                
+    //                             IS = 2;
+    //                         end
+    //                         2: begin 
+    //                             // write to register
+    //                             MemR = 0;
+    //                             RegW = 1;
+    //                             MemtoReg = 1;
+
+    //                             IS = 3;
+    //                         end
+    //                         3: begin 
+    //                             // finish writing to register
+    //                             RegW = 0;
+    //                             MemtoReg = 0;
+
+    //                             IS = 4;
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 //         ST: begin
+    //                 //             BranchOp <= 3'b000;
+    //                 //             ALUOp <= 4'b0001;   // ADD is required
+    //                 //             ALUSrc <= 0;      // not relevant
+    //                 //             MemR <= 0;
+    //                 //             MemW <= 1;
+    //                 //             RegW <= 0;  
+    //                 //             MemtoReg <= 0;
+    //                 //             StackOp <= 3'b000;
+    //                 //         end
+
+    //                 ST: begin
+    //                     case(IS)
+    //                         0: begin 
+    //                             BranchOp = 3'b000;
+    //                             ALUOp = 4'b0001;   // ADD is required
+    //                             ALUSrc = 0;      // not relevant
+    //                             MemR = 0;
+    //                             RegW = 0;
+    //                             StackOp = 0;
+
+    //                             IS = 1;
+    //                         end
+    //                         1: begin 
+    //                             // initiate writing to memory
+    //                             MemW = 1;
+
+    //                             IS = 2;
+    //                         end
+    //                     endcase
+    //                 end
+
+    //                 LDSP: begin
+    //                     case(IS)
+    //                     endcase
+    //                 end
+
+    //                 STSP: begin
+    //                     case(IS)
+    //                     endcase
+    //                 end
+
+    //                 MOVE: begin
+    //                     case(IS)
+    //                     endcase
+    //                 end
+
+    //                 PUSH: begin
+    //                     case(IS)
+    //                     endcase
+    //                 end
+
+    //                 POP: begin
+    //                     case(IS)
+    //                     endcase
+    //                 end
+
+    //                 CALL: begin
+    //                     case(IS)
+    //                     endcase
+    //                 end
+
+    //                 HALT: begin
+    //                     case(IS)
+    //                     endcase
+    //                 end
+
+    //                 NOP: begin
+    //                     case(IS)
+    //                     endcase
+    //                 end
+
+    //                 RET: begin
+    //                     case(IS)
+    //                     endcase
+    //                 end
+
+    //             endcase
+    //         end
+    //     endcase
+    // end
