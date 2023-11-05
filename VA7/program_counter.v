@@ -8,10 +8,12 @@ module program_counter(PCin, updatePC, reset, clk, PCout);
 
     always @(posedge clk)
     begin
-        if(reset) 
+        // $display("PCin = %d, updatePC = %d", PCin, updatePC);
+        if(reset) begin
             PCout <= 0;
+        end
         else if (updatePC) begin
-            $display("UPDATING PC");
+            $display("UPDATING PC to %d", PCin);
             PCout <= PCin;
         end
     end

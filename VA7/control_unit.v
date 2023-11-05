@@ -223,52 +223,162 @@ module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegD
 
 
             // I-type branch operations
+
+            // BR Imm 
             BR: begin
-                BranchOp <= 3'b001;
-                ALUOp <= 4'b0001;   // ADD is required
-                ALUSrc <= 0;        // not relevant
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 0;  
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS) 
+                    0: begin 
+                        BranchOp <= 3'b001;
+                        ALUOp <= 4'b0001;   // ADD is required
+                        ALUSrc <= 1;        // imm is used
+                        MemR <= 0;
+                        MemW <= 0;
+                        RegW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0; 
+                        StackOp <= 3'b000; // this and above 5 are irrelevant
+
+                        IS <= 1;
+                    end
+                    1: begin 
+                        // buffer state to finish ALU operations
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish 
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+
+                // BranchOp <= 3'b001; 
+                // ALUOp <= 4'b0001;   // ADD is required
+                // ALUSrc <= 0;        // not relevant
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 0;  
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
             end
 
             BPL: begin
-                BranchOp <= 3'b010;
-                ALUOp <= 4'b0001;   // ADD is required
-                ALUSrc <= 0;        // not relevant
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 0; 
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS) 
+                    0: begin 
+                        BranchOp <= 3'b010;
+                        ALUOp <= 4'b0001;   // ADD is required
+                        ALUSrc <= 1;        // imm is used
+                        MemR <= 0;
+                        MemW <= 0;
+                        RegW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0; 
+                        StackOp <= 3'b000; // this and above 5 are irrelevant
+
+                        IS <= 1;
+                    end
+                    1: begin 
+                        // buffer state to finish ALU operations
+
+                        IS <= 2;
+                    end 
+                    2: begin 
+                        // finish 
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+
+                // BranchOp <= 3'b010;
+                // ALUOp <= 4'b0001;   // ADD is required
+                // ALUSrc <= 0;        // not relevant
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 0; 
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
             end
 
             BMI: begin
-                BranchOp <= 3'b011;
-                ALUOp <= 4'b0001;   // ADD is required
-                ALUSrc <= 0;        // not relevant
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 0;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS) 
+                    0: begin 
+                        BranchOp <= 3'b011;
+                        ALUOp <= 4'b0001;   // ADD is required
+                        ALUSrc <= 1;        // imm is used
+                        MemR <= 0;
+                        MemW <= 0;
+                        RegW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0; 
+                        StackOp <= 3'b000; // this and above 5 are irrelevant
+
+                        IS <= 1;
+                    end
+                    1: begin 
+                        // buffer state to finish ALU operations
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish 
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+
+                // BranchOp <= 3'b011;
+                // ALUOp <= 4'b0001;   // ADD is required
+                // ALUSrc <= 0;        // not relevant
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 0;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
             end
 
             BZ: begin
-                BranchOp <= 3'b100;
-                ALUOp <= 4'b0001;   // ADD is required
-                ALUSrc <= 0;        // not relevant
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 0;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS) 
+                    0: begin 
+                        BranchOp <= 3'b100;
+                        ALUOp <= 4'b0001;   // ADD is required
+                        ALUSrc <= 1;        // imm is used
+                        MemR <= 0;
+                        MemW <= 0;
+                        RegW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0; 
+                        StackOp <= 3'b000; // this and above 5 are irrelevant
+
+                        IS <= 1;
+                    end
+                    1: begin 
+                        // buffer state to finish ALU operations
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish 
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                
+                // BranchOp <= 3'b100;
+                // ALUOp <= 4'b0001;   // ADD is required
+                // ALUSrc <= 0;        // not relevant
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 0;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
             end
 
 
@@ -399,6 +509,9 @@ module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegD
                 MemtoReg <= 0;
                 RegDst <= 0;
                 StackOp <= 3'b000;
+
+                updatePC <= 1;
+                CS <= 0;
             end
 
             // I-type stack operations + RET (miscellaneous)

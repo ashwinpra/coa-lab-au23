@@ -76,7 +76,8 @@ module PC_control(BranchOp, StackOp, ALUout, regval, LMD, PCin, rst, clk, PCout)
                         end
 
                         // default 
-                        default: begin
+                        default: begin  
+                            // $display("reached default cause for PCin = %d", PCin);
                             PCout <= PCin + 1;
                         end
                     endcase

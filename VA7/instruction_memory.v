@@ -23,6 +23,7 @@ module instruction_memory(addr, ins);
 	end
 
 	always @(*) begin 
+		// $display("PC = %d, ins = %b", addr[9:0], mem[addr[9:0]]);
 		ins = mem[addr[9:0]];
 	end
 endmodule

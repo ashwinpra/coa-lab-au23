@@ -35,6 +35,7 @@ module alu (a,b,shamt,funct,clk,res);
 
     always @(posedge clk)
     begin
+        // $display("A = %d, B = %d, shamt = %d, funct = %d", a, b, shamt, funct);
         case(funct)
             ADD: res <= add_out; 
             SUB: res <= sub_out;

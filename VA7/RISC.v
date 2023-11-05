@@ -21,7 +21,7 @@ module risc(clk, rst, out);
 
 
     instruction_memory IM (
-        .addr(NPC),
+        .addr(PC),
         .ins(ins)
     );
 
@@ -116,9 +116,9 @@ module risc(clk, rst, out);
     wire [3:0] ALUfunct;
     assign ALUfunct = (ALUOp == 4'b0000) ? funct : ALUOp;
 
-    // if it's a branching operation, then ALUin1 is NPC, else A
+    // if it's a branching operation, then ALUin1 is PC, else A
     wire [31:0] ALUin1; 
-    assign ALUin1 = (BranchOp == 0) ? A : NPC; 
+    assign ALUin1 = (BranchOp == 0) ? A : PC; 
     
     // if ALUSrc is 0, choose B, else choose imm 
     wire [31:0] ALUin2;
