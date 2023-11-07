@@ -1,11 +1,11 @@
-// Module to control stack operations
+// Module to control stack 
 
-module SP_control(StackOp, clk, rst, SPin, SPout, MemSP);
-    input [2:0] StackOp;
-    input clk, rst; 
-    input [31:0] SPin;
-    output reg [31:0] SPout;
-    output reg [31:0] MemSP; // the value of SP that will be used to access memory
+module SP_control(StackOp, clk, rst, SPin, SPout, MemSP); 
+    input [2:0] StackOp; 
+    input clk, rst;
+    input [31:0] SPin; // will be obtained from Rs/Rt
+    output reg [31:0] SPout; // will be used to update SP 
+    output reg [31:0] MemSP; // will be used to update memory
 
     wire [3:0] funct;
     // in push and call, funct = 2 (SUB)
@@ -14,45 +14,43 @@ module SP_control(StackOp, clk, rst, SPin, SPout, MemSP);
 
     wire [31:0] tempSP;
 
-    // alu (a,b,shamt,funct,clk,res);
+    // to do SP +/- 1
     alu StackALU (
         .a(SPin),
         .b(1),
-        .shamt(5'b0),
+        .shamt(5'b1),
         .funct(funct),
         .clk(clk),
         .res(tempSP)
-    );
+    ); 
 
-    // initial $display("SP_control called");
-
-    always @(posedge clk) begin
+        always @(posedge clk) begin
         if (rst) begin
             SPout <= 0;
         end
         else begin
             case (StackOp)
-                // 000 -> PUSH
+                // 001 -> PUSH
                 3'b001: begin
                     SPout <= tempSP;
                     MemSP <= tempSP; // Mem [SP] <= R[Rs]
                 end
 
-                // 001 -> POP
+                // 010 -> POP
                 3'b010: begin
                     MemSP <= SPin; // LMD <= Mem [SP]
                     SPout <= tempSP;
                 end
 
                 // 011 -> CALL
-                3'b010: begin
+                3'b011: begin
                     SPout <= tempSP;
                     MemSP <= tempSP; // Mem [SP] <= NPC (PC + 1)
                     // PC <= ALUOut - done in PC_control
                 end
 
                 // 100 -> RET
-                3'b011: begin
+                3'b100: begin
                     MemSP <= SPin; // LMD <= Mem [SP]
                     SPout <= tempSP;
                 end
@@ -61,7 +59,4 @@ module SP_control(StackOp, clk, rst, SPin, SPout, MemSP);
     end
 
 
-
-
-    
 endmodule

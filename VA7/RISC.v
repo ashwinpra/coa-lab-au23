@@ -16,7 +16,7 @@ module risc(clk, rst, out);
     wire [31:0] A, B, Rdin;
     wire [31:0] LMD;
     wire [31:0] ALUout; 
-    wire [31:0] SP, NSP, MemSP;
+    wire [31:0] SPin, SPout, MemSP;
     wire updatePC;
 
 
@@ -49,7 +49,7 @@ module risc(clk, rst, out);
         .funct(funct),
         .imm(imm)
     );
-
+        
     control_unit CPU (
         .clk(clk),
         .opcode(opcode),
@@ -67,7 +67,7 @@ module risc(clk, rst, out);
 
     assign destReg = (RegDst == 1) ? Rd : Rt; // MUX to control destination register to write to 
 
-    assign Rdin = (MemtoReg == 1) ? LMD : ALUout; // MUX to control Rdin
+    assign Rdin = (MemtoReg == 1) ? LMD : ( (StackOp == 0) ? ALUout : SPout ); // MUX to control Rdin - additional case is in case of stack operations, where Rdin = SPout
 
     regbank RB(
         .ins(ins),
@@ -94,13 +94,16 @@ module risc(clk, rst, out);
         .PCout(NPC)
     );
 
-    // SP_control(StackOp, clk, rst, SPin, SPout, MemSP);
+    // in case of PUSH and POP, Rt (B) will be used to get SP, else A will be used
+    assign SPin = (StackOp == 3'b001 || StackOp == 3'b010) ? B : A; // MUX to control SPin
+
+
     SP_control SPC (
         .StackOp(StackOp), 
         .clk(clk), 
         .rst(rst),
-        .SPin(), 
-        .SPout(), 
+        .SPin(SPin), 
+        .SPout(SPout), 
         .MemSP(MemSP)
     );
 
@@ -112,17 +115,18 @@ module risc(clk, rst, out);
         .updatePC(updatePC)
     );
 
-    // to decide funct based on ALUOp
     wire [3:0] ALUfunct;
-    assign ALUfunct = (ALUOp == 4'b0000) ? funct : ALUOp;
+    assign ALUfunct = (ALUOp == 4'b0000) ? funct : ALUOp; // MUX to control ALU function based on ALUOp
 
     // if it's a branching operation, then ALUin1 is PC, else A
+    // ALUin1 will be PC also in case of CALL
     wire [31:0] ALUin1; 
-    assign ALUin1 = (BranchOp == 0) ? A : PC; 
+    assign ALUin1 = (BranchOp == 0) ? (StackOp == 3'b011 ? PC : A) : PC; // MUX to control ALUin1
+
     
     // if ALUSrc is 0, choose B, else choose imm 
     wire [31:0] ALUin2;
-    assign ALUin2 = (ALUSrc == 0) ? B : imm;
+    assign ALUin2 = (ALUSrc == 0) ? B : imm; // MUX to control ALUin2
 
     alu ALU (
         .a(ALUin1),

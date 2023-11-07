@@ -61,7 +61,6 @@ module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegD
     end
 
     always @(posedge clk) begin
-        // $display("opcode = %b", opcode);
         case (CS) 
         0: begin 
             updatePC <= 0;
@@ -474,28 +473,97 @@ module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegD
                 // StackOp <= 3'b000;
             end
 
+            // same as LD and ST, but with SP (SP will be given as Rt anyways)
             LDSP: begin
-                BranchOp <= 3'b000;
-                ALUOp <= 4'b0001;   // ADD is required
-                ALUSrc <= 0;      // not relevant
-                MemR <= 1;
-                MemW <= 0;
-                RegW <= 1;   
-                MemtoReg <= 1;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin 
+                        BranchOp <= 3'b000;
+                        ALUOp <= 4'b0001;   // ADD is required
+                        ALUSrc <= 1;        // imm is used 
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
+
+                        IS <= 1; 
+                    end
+                    1: begin 
+                        // initiate memory read
+                        MemR <= 1;
+                        MemW <= 0;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // write to register
+                        MemR <= 0;
+                        MemtoReg <= 1;
+                        RegW <= 1;
+
+                        IS <= 3;
+                    end
+                    3: begin 
+                        // finish 
+                        MemtoReg <= 0;
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0; 
+                    end
+                endcase
+
+                // BranchOp <= 3'b000;
+                // ALUOp <= 4'b0001;   // ADD is required
+                // ALUSrc <= 0;      // not relevant
+                // MemR <= 1;
+                // MemW <= 0;
+                // RegW <= 1;   
+                // MemtoReg <= 1;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
             end
 
             STSP: begin
-                BranchOp <= 3'b000;
-                ALUOp <= 4'b0001;   // ADD is required
-                ALUSrc <= 0;      // not relevant
-                MemR <= 0;
-                MemW <= 1;
-                RegW <= 0; 
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS) 
+                    0: begin 
+                        BranchOp <= 3'b000;
+                        ALUOp <= 4'b0001;   // ADD is required
+                        ALUSrc <= 1;      // imm is used 
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
+                        MemR <= 0;
+
+                        IS <= 1; 
+                    end
+                    1: begin 
+                        // buffer state to finish ALU operations
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // initiate memory write
+                        MemW <= 1;
+
+                        IS <= 3;
+                    end
+                    3: begin 
+                        // finish 
+                        MemW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+
+                // BranchOp <= 3'b000;
+                // ALUOp <= 4'b0001;   // ADD is required
+                // ALUSrc <= 0;      // not relevant
+                // MemR <= 0;
+                // MemW <= 1;
+                // RegW <= 0; 
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
             end
 
             // I-type move operation - implemented similar to ADDI (Rt = Rs + 0)
@@ -516,51 +584,204 @@ module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegD
 
             // I-type stack operations + RET (miscellaneous)
             PUSH: begin
-                BranchOp <= 3'b000;
-                ALUOp <= 4'b1111; // not relevant
-                ALUSrc <= 0;      // not relevant
-                MemR <= 0;
-                MemW <= 1;
-                RegW <= 0;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b001;
+                case(IS)
+                    0: begin 
+                        BranchOp <= 3'b000;
+                        ALUOp <= 4'b0001; // ADD will be used (Rs + 0)
+                        ALUSrc <= 1;      // imm is used
+                        MemR <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 1; // write to Rd
+                        StackOp <= 3'b001;
+
+                        IS <= 1;
+                    end
+                    1: begin 
+                        // initiate register write
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // initiate memory write
+                        RegW <= 0;
+                        MemW <= 1;
+
+                        IS <= 3;
+                    end
+                    3: begin 
+                        // finish
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+
+                // BranchOp <= 3'b000;
+                // ALUOp <= 4'b1111; // not relevant -> check 
+                // ALUSrc <= 0;      // not relevant
+                // MemR <= 0;
+                // MemW <= 1;
+                // RegW <= 0;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b001;
             end
 
             POP: begin
-                BranchOp <= 3'b000;
-                ALUOp <= 4'b1111; // not relevant
-                ALUSrc <= 0;      // not relevant
-                MemR <= 1;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 1;
-                RegDst <= 0;
-                StackOp <= 3'b010;
+                case(IS) 
+                    0: begin 
+                        BranchOp <= 3'b000;
+                        ALUOp <= 4'b0001; // ADD will be used (Rt + 0)
+                        ALUSrc <= 1;      // imm is used
+                        MemW <= 0;
+                        RegDst <= 0;    // initially Rt will be written to 
+                        MemtoReg <= 1;  // initially LMD will be used
+                        StackOp <= 3'b010;
+
+                        IS <= 1;
+                    end
+                    1: begin 
+                        // read from memory
+                        MemR <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // initiate register write to Rt
+                        MemR <= 0;
+                        RegW <= 1;
+
+                        IS <= 3;
+                    end
+                    3: begin 
+                        // finish register write to Rt
+                        RegW <= 0; 
+                        
+                        // start register write to Rd
+                        RegDst <= 1;
+                        MemtoReg <= 0; // SPout will be used this time
+
+                        IS <= 4;
+                    end
+                    4: begin 
+                        // write to Rd
+                        RegW <= 1;
+
+                        IS <= 5;
+                    end
+                    5: begin 
+                        // finish register write to Rd
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= 4'b1111; // not relevant - check
+                // ALUSrc <= 0;      // not relevant
+                // MemR <= 1;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 1;
+                // RegDst <= 0;
+                // StackOp <= 3'b010;
             end
 
             CALL: begin
-                BranchOp <= 3'b000;
-                ALUOp <= 4'b1111; // not relevant
-                ALUSrc <= 1;      
-                MemR <= 0;
-                MemW <= 1;
-                RegW <= 0;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b011;
+                case(IS)
+                    0: begin 
+                        BranchOp <= 3'b000; 
+                        ALUOp <= 4'b0001; // ADD will be used (PC + Imm)
+                        ALUSrc <= 1;      // imm is used
+                        MemR <= 0;
+                        MemtoReg <= 0; // SPout will be used
+                        RegDst <= 1; // Rd (SP) will be written to 
+                        StackOp <= 3'b011;
+
+                        IS <= 1;
+                    end
+                    1: begin 
+                        // write to register 
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // initiate memory write
+                        RegW <= 0;
+                        MemW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin
+                        // finish memory write
+                        MemW <= 0;
+
+                        updatePC <= 1; // will be updated as PC + Imm -> need to check this
+                        CS <= 0; 
+                        IS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= 4'b1111; // not relevant - check
+                // ALUSrc <= 1;      
+                // MemR <= 0;
+                // MemW <= 1;
+                // RegW <= 0;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b011;
             end
 
             RET: begin
-                BranchOp <= 3'b000;
-                ALUOp <= 4'b1111; // not relevant
-                ALUSrc <= 0;      // not relevant
-                MemR <= 1;
-                MemW <= 0;
-                RegW <= 0;
-                MemtoReg <= 1;
-                RegDst <= 0;
-                StackOp <= 3'b100;
+                case(IS)
+                    0: begin 
+                        BranchOp <= 3'b000;
+                        ALUOp <= 4'b0001; // no need for ALUOp
+                        ALUSrc <= 1;      // not releevant
+                        MemW <= 0;      
+                        MemtoReg <= 0; // SPout will be used
+                        RegDst <= 1; // Rd (SP) will be written to 
+                        StackOp <= 3'b100;
+
+                        IS <= 1;
+                    end
+                    1: begin    
+                        // read from memory (for PC)
+                        MemR <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // start register write to Rd
+                        MemR <= 0;
+                        RegW <= 1;
+
+                        IS <= 3;
+                    end
+                    3: begin
+                        // finish register write to Rd
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+
+                // BranchOp <= 3'b000;
+                // ALUOp <= 4'b1111; // not relevant - check
+                // ALUSrc <= 0;      // not relevant
+                // MemR <= 1;
+                // MemW <= 0;
+                // RegW <= 0;
+                // MemtoReg <= 1;
+                // RegDst <= 0;
+                // StackOp <= 3'b100;
             end
 
             // HALT, NOP

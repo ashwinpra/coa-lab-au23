@@ -17,7 +17,51 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
                     Rd <= ins[15:11];
                     shamt <= ins[10:6];
                     funct <= ins[5:0];
-                    imm <= 32'b0;
+                    imm <= 0;
+                end
+
+                // PUSH (instruction of type PUSH Rs)
+                // Rt will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
+                6'b010011: begin
+                    Rs <= ins[25:21];
+                    Rt <= 16;
+                    Rd <= 16;
+                    shamt <= 0;
+                    funct <= 0;
+                    imm <= 0; // not used
+                end
+
+                // POP (instruction of type POP Rs)
+                // Rt will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
+                6'b010100: begin
+                    Rs <= ins[25:21];
+                    Rt <= 16;
+                    Rd <= 16;
+                    shamt <= 0;
+                    funct <= 0;
+                    imm <= 0; // not used
+                end
+
+                // CALL (instruction of type CALL imm)
+                // Rs will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
+                6'b010101: begin
+                    Rs <= 16;
+                    Rt <= 0;
+                    Rd <= 16;
+                    shamt <= 0;
+                    funct <= 0;
+                    imm <= { {16{ins[15]}} , ins[15:0]};
+                end
+
+                // RET
+                // Rs will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
+                6'b011000: begin
+                    Rs <= 16;
+                    Rt <= 0;
+                    Rd <= 16;
+                    shamt <= 0;
+                    funct <= 0;
+                    imm <= 0;
                 end
 
                 // HALT
@@ -27,7 +71,7 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
                     Rd <= 0;
                     shamt <= 0;
                     funct <= 0;
-                    imm <= 32'b0;
+                    imm <= 0;
                 end
 
                 // NOP
@@ -37,20 +81,12 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
                     Rd <= 0;
                     shamt <= 0;
                     funct <= 0;
-                    imm <= 32'b0;
+                    imm <= 0;
                 end
                 
-                // RET
-                6'b011000: begin
-                    Rs <= 0;
-                    Rt <= 0;
-                    Rd <= 0;
-                    shamt <= 0;
-                    funct <= 0;
-                    imm <= 32'b0;
-                end
 
-                // I-type instructions 
+
+                // other I-type instructions 
                 default: begin
                     Rs <= ins[25:21];
                     Rt <= ins[20:16];
