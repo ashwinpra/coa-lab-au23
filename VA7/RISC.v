@@ -1,6 +1,6 @@
 // Main top module
-module risc(clk, rst, out);
-    input clk, rst;
+module risc(clk, rst, out, INT);
+    input clk, rst, INT;
     output [31:0] out;
 
 
@@ -25,7 +25,7 @@ module risc(clk, rst, out);
         .ins(ins)
     );
 
-    assign MemIn = (StackOp == 3'b010) ? NPC: B; // MUX to control memory write input - NPC in case of CALL, B otherwise
+    assign MemIn = (StackOp == 3'b011) ? PC: B; // MUX to control memory write input - PC in case of CALL, A otherwise
 
     assign MemAddr = (StackOp == 3'b000) ? ALUout : MemSP; // MUX to control memory address - MemSP in case of stack operations, ALUout otherwise
 
@@ -49,7 +49,7 @@ module risc(clk, rst, out);
         .funct(funct),
         .imm(imm)
     );
-        
+
     control_unit CPU (
         .clk(clk),
         .opcode(opcode),
@@ -62,7 +62,8 @@ module risc(clk, rst, out);
         .RegDst(RegDst),
         .MemtoReg(MemtoReg),
         .StackOp(StackOp), 
-        .updatePC(updatePC)
+        .updatePC(updatePC), 
+        .INT(INT)
     );
 
     assign destReg = (RegDst == 1) ? Rd : Rt; // MUX to control destination register to write to 
@@ -94,15 +95,12 @@ module risc(clk, rst, out);
         .PCout(NPC)
     );
 
-    // in case of PUSH and POP, Rt (B) will be used to get SP, else A will be used
-    assign SPin = (StackOp == 3'b001 || StackOp == 3'b010) ? B : A; // MUX to control SPin
-
 
     SP_control SPC (
         .StackOp(StackOp), 
         .clk(clk), 
         .rst(rst),
-        .SPin(SPin), 
+        .SPin(A), 
         .SPout(SPout), 
         .MemSP(MemSP)
     );
@@ -121,7 +119,7 @@ module risc(clk, rst, out);
     // if it's a branching operation, then ALUin1 is PC, else A
     // ALUin1 will be PC also in case of CALL
     wire [31:0] ALUin1; 
-    assign ALUin1 = (BranchOp == 0) ? (StackOp == 3'b011 ? PC : A) : PC; // MUX to control ALUin1
+    assign ALUin1 = (BranchOp == 0) ? ((StackOp == 3'b011) ? PC : A) : PC; // MUX to control ALUin1
 
     
     // if ALUSrc is 0, choose B, else choose imm 

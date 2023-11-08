@@ -1,7 +1,7 @@
 // Control unit that outputs required control signals for each instruction
 
-module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, MemtoReg, StackOp, updatePC);
-    input clk;
+module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegDst, MemtoReg, StackOp, updatePC, INT);
+    input clk, INT;
     input [5:0] opcode;
     output reg [2:0] BranchOp;
     output reg [3:0] ALUOp;
@@ -70,154 +70,422 @@ module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegD
         case(opcode)
             // R-type arithmetic operations
             R_TYPE: begin
-                BranchOp <= 3'b000;
-                ALUOp <= 4'b0000;
-                ALUSrc <= 0;
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 0;
-                RegDst <= 1; 
-                StackOp <= 3'b000;
+                case(IS)
+                0: begin
+                    BranchOp <= 3'b000;
+                    ALUOp <= 4'b0000;
+                    ALUSrc <= 0;
+                    MemR <= 0;
+                    MemW <= 0;
+                    MemtoReg <= 0;
+                    RegDst <= 1; 
+                    StackOp <= 3'b000;
 
-                updatePC <= 1;
-                CS <= 0;
+                    IS <= 1;
+                end
+                1: begin 
+                    // initiate register write
+                    RegW <= 1;
+
+                    IS <= 2;
+                end
+                2: begin 
+                    // finish register write
+                    RegW <= 0;
+
+                    updatePC <= 1;
+                    IS <= 0;
+                    CS <= 0;
+                end
+                endcase
             end
 
             // I-type arithmetic operations
             ADDI: begin
-                BranchOp <= 3'b000;
-                ALUOp <= opcode;
-                ALUSrc <= 1;
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin
+                        BranchOp <= 3'b000;
+                        ALUOp <= opcode;
+                        ALUSrc <= 1;
+                        MemR <= 0;
+                        MemW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
 
-                updatePC <= 1;
-                CS <= 0;
+                        IS <= 1;
+                    end 
+                    1: begin 
+                        // initiate register write
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish register write
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= opcode;
+                // ALUSrc <= 1;
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
+
+                // updatePC <= 1;
+                // CS <= 0;
             end
 
             SUBI: begin
-                BranchOp <= 3'b000;
-                ALUOp <= opcode;
-                ALUSrc <= 1;
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin
+                        BranchOp <= 3'b000;
+                        ALUOp <= opcode;
+                        ALUSrc <= 1;
+                        MemR <= 0;
+                        MemW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
 
-                updatePC <= 1;
-                CS <= 0;
+                        IS <= 1;
+                    end 
+                    1: begin 
+                        // initiate register write
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish register write
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= opcode;
+                // ALUSrc <= 1;
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
+
+                // updatePC <= 1;
+                // CS <= 0;
             end
 
             ANDI: begin
-                BranchOp <= 3'b000;
-                ALUOp <= opcode;
-                ALUSrc <= 1;
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin
+                        BranchOp <= 3'b000;
+                        ALUOp <= opcode;
+                        ALUSrc <= 1;
+                        MemR <= 0;
+                        MemW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
 
-                updatePC <= 1;
-                CS <= 0;
+                        IS <= 1;
+                    end 
+                    1: begin 
+                        // initiate register write
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish register write
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= opcode;
+                // ALUSrc <= 1;
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
+
+                // updatePC <= 1;
+                // CS <= 0;
             end
 
             ORI: begin
-                BranchOp <= 3'b000;
-                ALUOp <= opcode;
-                ALUSrc <= 1;
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin
+                        BranchOp <= 3'b000;
+                        ALUOp <= opcode;
+                        ALUSrc <= 1;
+                        MemR <= 0;
+                        MemW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
 
-                updatePC <= 1;
-                CS <= 0;
+                        IS <= 1;
+                    end 
+                    1: begin 
+                        // initiate register write
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish register write
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= opcode;
+                // ALUSrc <= 1;
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
+
+                // updatePC <= 1;
+                // CS <= 0;
             end
 
             XORI: begin
-                BranchOp <= 3'b000;
-                ALUOp <= opcode;
-                ALUSrc <= 1;
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin
+                        BranchOp <= 3'b000;
+                        ALUOp <= opcode;
+                        ALUSrc <= 1;
+                        MemR <= 0;
+                        MemW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
 
-                updatePC <= 1;
-                CS <= 0;
+                        IS <= 1;
+                    end 
+                    1: begin 
+                        // initiate register write
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish register write
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= opcode;
+                // ALUSrc <= 1;
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
+
+                // updatePC <= 1;
+                // CS <= 0;
             end
 
             NOTI: begin
-                BranchOp <= 3'b000;
-                ALUOp <= opcode;
-                ALUSrc <= 1;
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin
+                        BranchOp <= 3'b000;
+                        ALUOp <= opcode;
+                        ALUSrc <= 1;
+                        MemR <= 0;
+                        MemW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
 
-                updatePC <= 1;
-                CS <= 0;
+                        IS <= 1;
+                    end 
+                    1: begin 
+                        // initiate register write
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish register write
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= opcode;
+                // ALUSrc <= 1;
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
+
+                // updatePC <= 1;
+                // CS <= 0;
             end
 
             SLAI: begin
-                BranchOp <= 3'b000;
-                ALUOp <= opcode;
-                ALUSrc <= 1;
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin
+                        BranchOp <= 3'b000;
+                        ALUOp <= opcode;
+                        ALUSrc <= 1;
+                        MemR <= 0;
+                        MemW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
 
-                updatePC <= 1;
-                CS <= 0;
+                        IS <= 1;
+                    end 
+                    1: begin 
+                        // initiate register write
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish register write
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= opcode;
+                // ALUSrc <= 1;
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
+
+                // updatePC <= 1;
+                // CS <= 0;
             end
 
             SRLI: begin
-                BranchOp <= 3'b000;
-                ALUOp <= opcode;
-                ALUSrc <= 1;
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin
+                        BranchOp <= 3'b000;
+                        ALUOp <= opcode;
+                        ALUSrc <= 1;
+                        MemR <= 0;
+                        MemW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
 
-                updatePC <= 1;
-                CS <= 0;
+                        IS <= 1;
+                    end 
+                    1: begin 
+                        // initiate register write
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish register write
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= opcode;
+                // ALUSrc <= 1;
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
+
+                // updatePC <= 1;
+                // CS <= 0;
             end
 
             SRAI: begin
-                BranchOp <= 3'b000;
-                ALUOp <= opcode;
-                ALUSrc <= 1;
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin
+                        BranchOp <= 3'b000;
+                        ALUOp <= opcode;
+                        ALUSrc <= 1;
+                        MemR <= 0;
+                        MemW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
 
-                updatePC <= 1;
-                CS <= 0;
+                        IS <= 1;
+                    end 
+                    1: begin 
+                        // initiate register write
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish register write
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= opcode;
+                // ALUSrc <= 1;
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
+
+                // updatePC <= 1;
+                // CS <= 0;
             end
 
 
@@ -715,15 +983,20 @@ module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegD
                         RegW <= 0;
                         MemW <= 1;
 
-                        IS <= 2;
+                        // $display("CALL state 2");
+                        IS <= 3;
                     end
-                    2: begin
+                    3: begin
                         // finish memory write
                         MemW <= 0;
 
+                        IS <= 4; 
+                    end
+                    4: begin 
                         updatePC <= 1; // will be updated as PC + Imm -> need to check this
-                        CS <= 0; 
+                        
                         IS <= 0;
+                        CS <= 0;
                     end
                 endcase
                 // BranchOp <= 3'b000;
@@ -784,7 +1057,31 @@ module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegD
                 // StackOp <= 3'b100;
             end
 
-            // HALT, NOP
+            // HALT 
+            HALT: begin
+                case(IS)
+                    0: begin 
+                        BranchOp <= 3'b000;
+                        ALUOp <= 4'b0000;
+                        ALUSrc <= 0;
+                        MemR <= 0;
+                        MemW <= 0;
+                        RegW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0;
+                        StackOp <= 3'b000;   
+
+                        if (INT) IS <= 1; 
+                    end
+                    1: begin 
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+            end
+
+            // NOP
             default: begin
                 BranchOp <= 3'b000;
                 ALUOp <= 4'b0000;

@@ -22,9 +22,9 @@ module data_memory (opcode, address, writeData, MemR, MemW, readData);
 	input [31:0] writeData;
 	input MemR;
 	input MemW;
-	output reg [31:0] readData;
+	output reg signed [31:0] readData;
 
-    reg [31:0] mem [0:1023];
+    reg signed [31:0] mem [0:1023];
 
 	integer k;
 
@@ -37,7 +37,7 @@ module data_memory (opcode, address, writeData, MemR, MemW, readData);
 		// $monitor("addr = %d, MemR = %d, MemW = %d", address[9:0], MemR, MemW);
 		// $monitor("writeData = %d", writeData);
 		// $monitor("mem[0] = %d, mem[1] = %d, mem[2] = %d, mem[3] = %d", mem[0], mem[1], mem[2], mem[3]);
-		$monitor("mem[1023] = %d", mem[1023]);
+		$monitor("mem[1022] = %d", mem[1022]);
         if (MemW) begin
 			// $display("opcode = %b, writing to mem[%d], %d", opcode, address[9:0], writeData);
 			mem[address[9:0]] <= writeData;

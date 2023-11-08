@@ -8,7 +8,6 @@ module program_counter(PCin, updatePC, reset, clk, PCout);
 
     always @(posedge clk)
     begin
-        // $display("PCin = %d, updatePC = %d", PCin, updatePC);
         if(reset) begin
             PCout <= 0;
         end

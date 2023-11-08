@@ -67,6 +67,7 @@ module PC_control(BranchOp, StackOp, ALUout, regval, LMD, PCin, rst, clk, PCout)
 
                         // 011 -> CALL
                         3'b011: begin
+                            $display("case of CALL for PCin = %d", PCin);
                             PCout <= ALUout;
                         end
 
@@ -77,7 +78,6 @@ module PC_control(BranchOp, StackOp, ALUout, regval, LMD, PCin, rst, clk, PCout)
 
                         // default 
                         default: begin  
-                            // $display("reached default cause for PCin = %d", PCin);
                             PCout <= PCin + 1;
                         end
                     endcase

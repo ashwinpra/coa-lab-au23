@@ -19,7 +19,7 @@ module alu (a,b,shamt,funct,clk,res);
         SRA = 8, 
         SRL = 9;
 
-    wire [31:0] add_out, sub_out, and_out, or_out, xor_out, not_out, sla_out, sra_out, srl_out;
+    wire signed [31:0] add_out, sub_out, and_out, or_out, xor_out, not_out, sla_out, sra_out, srl_out;
 
     adder       add_gate(a,b,add_out);
     subtractor  sub_gate(a,b,sub_out);
@@ -35,7 +35,7 @@ module alu (a,b,shamt,funct,clk,res);
 
     always @(posedge clk)
     begin
-        $display("A = %d, B = %d, shamt = %d, funct = %d", a, b, shamt, funct);
+        // $display("A = %d, B = %d, shamt = %d, funct = %d", a, b, shamt, funct);
         case(funct)
             ADD: res <= add_out; 
             SUB: res <= sub_out;

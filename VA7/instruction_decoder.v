@@ -20,22 +20,22 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
                     imm <= 0;
                 end
 
-                // PUSH (instruction of type PUSH Rs)
-                // Rt will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
+                // PUSH (instruction of type PUSH Rt)
+                // Rs will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
                 6'b010011: begin
-                    Rs <= ins[25:21];
-                    Rt <= 16;
+                    Rs <= 16;
+                    Rt <= ins[25:21];
                     Rd <= 16;
                     shamt <= 0;
                     funct <= 0;
                     imm <= 0; // not used
                 end
 
-                // POP (instruction of type POP Rs)
-                // Rt will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
+                // POP (instruction of type POP Rt)
+                // Rs will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
                 6'b010100: begin
-                    Rs <= ins[25:21];
-                    Rt <= 16;
+                    Rs <= 16;
+                    Rt <= ins[25:21];
                     Rd <= 16;
                     shamt <= 0;
                     funct <= 0;
