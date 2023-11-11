@@ -7,26 +7,14 @@ module SP_control(StackOp, clk, rst, SPin, SPout, MemSP);
     output reg [31:0] SPout; // will be used to update SP 
     output reg [31:0] MemSP; // will be used to update memory
 
-    // wire [3:0] funct;
-    // in push and call, funct = 2 (SUB)
-    // in pop and ret, funct = 1 (ADD)
-    // assign funct = (StackOp == 1 || StackOp == 3) ? 2 : 1;
-
     wire [31:0] tempSP;
 
-    // // to do SP +/- 1
-    // alu StackALU (
-    //     .a(SPin),
-    //     .b(1),
-    //     .shamt(5'b1),
-    //     .funct(funct),
-    //     .clk(clk),
-    //     .res(tempSP)
-    // ); 
-
+    initial begin 
+        SPout <= 1023;
+    end
         always @(posedge clk) begin
         if (rst) begin
-            SPout <= 0;
+            SPout <= 1023;
         end
         else begin
             case (StackOp)

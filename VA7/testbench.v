@@ -19,8 +19,8 @@ initial begin
 
 
     $display("Starting testbench");
-    #10 rst = 1;
-    #40 rst = 0;
+    // #10 rst = 1;
+    // #10 rst = 0;
 
 
     // $monitor("out = %d", out);  

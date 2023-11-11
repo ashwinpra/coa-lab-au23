@@ -6,12 +6,45 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
     output reg [4:0] Rs,Rt,Rd,shamt;
     output reg [31:0] imm;
 
+    parameter 
+        R_TYPE = 6'b000000,
+
+        ADDI =  6'b000001,
+        SUBI =  6'b000010,
+        ANDI =  6'b000011,
+        ORI =   6'b000100,
+        XORI = 6'b000101,
+        NOTI = 6'b000110,
+        SLAI = 6'b000111,
+        SRLI = 6'b001000,
+        SRAI = 6'b001001,
+
+        BR =   6'b001010,
+        BMI =  6'b001011,
+        BPL =  6'b001100,
+        BZ =   6'b001101,
+
+        LD =  6'b001110,
+        ST =  6'b001111,
+        LDSP = 6'b010000,
+        STSP = 6'b010001,
+
+        MOVE = 6'b010010,
+
+        PUSH = 6'b010011,
+        POP = 6'b010100,
+        CALL = 6'b010101, 
+
+        HALT = 6'b010110,
+        NOP = 6'b010111,
+        RET = 6'b011000;
+
    always @(*)
         begin
             opcode <= ins[31:26];
             case(opcode)
                 // R-type instructions - arithmetic operations
-                6'b000000: begin
+                R_TYPE: begin
                     Rs <= ins[25:21];
                     Rt <= ins[20:16];
                     Rd <= ins[15:11];
@@ -22,7 +55,7 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
 
                 // PUSH (instruction of type PUSH Rt)
                 // Rs will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
-                6'b010011: begin
+                PUSH: begin
                     Rs <= 16;
                     Rt <= ins[25:21];
                     Rd <= 16;
@@ -33,7 +66,7 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
 
                 // POP (instruction of type POP Rt)
                 // Rs will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
-                6'b010100: begin
+                POP: begin
                     Rs <= 16;
                     Rt <= ins[25:21];
                     Rd <= 16;
@@ -44,7 +77,7 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
 
                 // CALL (instruction of type CALL imm)
                 // Rs will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
-                6'b010101: begin
+                CALL: begin
                     Rs <= 16;
                     Rt <= 0;
                     Rd <= 16;
@@ -55,7 +88,7 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
 
                 // RET
                 // Rs will be used to get SP in this case. also writing to SP will be required so Rd will also be SP
-                6'b011000: begin
+                RET: begin
                     Rs <= 16;
                     Rt <= 0;
                     Rd <= 16;
@@ -65,7 +98,7 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
                 end
 
                 // HALT
-                6'b010110: begin
+                HALT: begin
                     Rs <= 0;
                     Rt <= 0;
                     Rd <= 0;
@@ -75,7 +108,7 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
                 end
 
                 // NOP
-                6'b010111: begin
+                NOP: begin
                     Rs <= 0;
                     Rt <= 0;
                     Rd <= 0;
@@ -91,9 +124,11 @@ module instruction_decoder (ins,opcode,Rs,Rt,Rd,shamt,funct,imm);
                     Rs <= ins[25:21];
                     Rt <= ins[20:16];
                     Rd <= 0;
-                    shamt <= 0;
+                    // in case of shift operations, shamt is the "imm" field
+                    if (opcode == SRAI || opcode == SLAI || opcode == SRLI) shamt <= ins[4:0];
+                    else shamt <= 0;
                     funct <= 0;
-                    if (opcode == 6'b010010) imm <= 0; // implementing MOVE as ADDI with Imm = 0
+                    if (opcode == MOVE) imm <= 0; // implementing MOVE as ADDI with Imm = 0
                     else imm <= { {16{ins[15]}} , ins[15:0]};
                 end
                 

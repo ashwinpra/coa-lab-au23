@@ -37,7 +37,7 @@ module data_memory (opcode, address, writeData, MemR, MemW, readData);
 		// $monitor("addr = %d, MemR = %d, MemW = %d", address[9:0], MemR, MemW);
 		// $monitor("writeData = %d", writeData);
 		// $monitor("mem[0] = %d, mem[1] = %d, mem[2] = %d, mem[3] = %d", mem[0], mem[1], mem[2], mem[3]);
-		$monitor("mem[1022] = %d", mem[1022]);
+		// $monitor("mem[1022] = %d", mem[1022]);
         if (MemW) begin
 			// $display("opcode = %b, writing to mem[%d], %d", opcode, address[9:0], writeData);
 			mem[address[9:0]] <= writeData;

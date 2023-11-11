@@ -6,6 +6,10 @@ module program_counter(PCin, updatePC, reset, clk, PCout);
     input reset,clk;
     output reg [31:0] PCout;
 
+    initial begin 
+        PCout <= 0; 
+    end
+
     always @(posedge clk)
     begin
         if(reset) begin

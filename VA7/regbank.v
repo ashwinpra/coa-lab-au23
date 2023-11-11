@@ -23,7 +23,7 @@ module regbank(ins, rData1, rData2, wrData, Rs, Rt, Rd, reset, RegW, clk);
     always @(posedge clk) begin
         regfile[0] <= 0;
         // $monitor("ins = %b, reg[%d] = %d, reg[%d] = %d", ins, Rs, rData1, Rt, rData2);
-        // $monitor("rf[0] = %d, rf[1] = %d, rf[2] = %d, rf[3] = %d, rf[4] = %d, SP = %d", regfile[0], regfile[1], regfile[2], regfile[3], regfile[4], regfile[16]);
+        $monitor("rf[0] = %d, rf[1] = %d, rf[2] = %d, rf[3] = %d, rf[4] = %d, rf[5] = %d, SP = %d", regfile[0], regfile[1], regfile[2], regfile[3], regfile[4], regfile[5], regfile[16]);
         // $monitor("SP = %d", regfile[16]);
         // $monitor("regfile[0] = %d, regfile[1] = %d, regfile[2] = %d, regfile[3] = %d", regfile[0], regfile[1], regfile[2], regfile[3]);
         // $monitor("regfile[4] = %d", regfile[4]);

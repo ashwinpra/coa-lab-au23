@@ -10,6 +10,10 @@ module PC_control(BranchOp, StackOp, ALUout, regval, LMD, PCin, rst, clk, PCout)
     input rst, clk;
     output reg [31:0] PCout; 
 
+    initial begin 
+        PCout <= 0; 
+    end
+
     always @(posedge clk) begin
         // $display("BranchOp = %d, StackOp = %d, ALUout = %d, PCin = %d", BranchOp, StackOp, ALUout, PCin);
         if (rst) begin

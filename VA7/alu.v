@@ -26,7 +26,7 @@ module alu (a,b,shamt,funct,clk,res);
     and_module  and_gate(a,b,and_out);
     or_module   or_gate(a,b,or_out);
     xor_module  xor_gate(a,b,xor_out);
-    not_module  not_gate(a,not_out);
+    not_module  not_gate(b,not_out);
     sla         sla_gate(a,b,shamt,sla_out);
     sra         sra_gate(a,b,shamt,sra_out);
     srl         srl_gate(a,b,shamt,srl_out);
@@ -56,8 +56,9 @@ module adder(a,b,out);
     input [31:0] b;
     output reg [31:0] out;
 
-    always @(a or b)
+    always @(a or b) begin
         out = a + b;
+    end
 endmodule
 
 module subtractor(a,b,out);
@@ -110,11 +111,12 @@ module sla(a,b,shamt,out);
     input signed [4:0] shamt;
     output reg signed [31:0] out;
 
-    always @(a or b or shamt)
+    always @(a or b or shamt) begin
         if (shamt)
             out = a <<< shamt;
         else
             out = a <<< b[0];
+    end
 endmodule
 
 module sra(a,b,shamt,out);
@@ -123,11 +125,12 @@ module sra(a,b,shamt,out);
     input signed [4:0] shamt;
     output reg signed [31:0] out;
 
-    always @(a or b or shamt)
+    always @(a or b or shamt) begin
         if (shamt)
             out = a >>> shamt;
         else
             out = a >>> b[0];
+    end
 endmodule   
 
 module srl(a,b,shamt,out);
@@ -136,10 +139,11 @@ module srl(a,b,shamt,out);
     input [4:0] shamt;
     output reg [31:0] out;
 
-    always @(a or b or shamt)
+    always @(a or b or shamt) begin
         if (shamt)
             out = a >> shamt;
         else
             out = a >> b[0];
+    end
 endmodule
 
