@@ -4,7 +4,7 @@ import json
 
 REGDICT = {}
 INSTRUCTION_DICT = {}
-OUTPUT_FILE = open("output", "w")
+OUTPUT_FILE = open("instructions_bin.txt", "w")
 
 def two_comp(num,nbits):
     '''
@@ -16,10 +16,7 @@ def two_comp(num,nbits):
         return f"{((1<<nbits)+num):0{nbits}b}"
     
 
-def spit_line(line):
-    '''
-    returns a list of the words in the line
-    '''
+def spit_line(line, full_line, i ):
     opcode = INSTRUCTION_DICT[line[0]][0]
     opc = int(opcode,2)
 
@@ -37,7 +34,7 @@ def spit_line(line):
                     rt = f"{REGDICT[line[2]]:05b}"
                     shamt = f"{0:05b}"
                     funct=f"{INSTRUCTION_DICT[line[0]][5]}"
-                    print(f"{opcode}_{rs}_{rt}_{rd}_{shamt}_{funct}", file = OUTPUT_FILE )
+                    print(f"{opcode}_{rs}_{rt}_{rd}_{shamt}_{funct} // {full_line} -> {i}", file = OUTPUT_FILE )
                 else: 
                     # Rd = Rs op Rt 
                     # so Rt will also be Rd
@@ -46,7 +43,7 @@ def spit_line(line):
                     rt = f"{REGDICT[line[1]]:05b}"
                     shamt = f"{0:05b}"
                     funct=f"{INSTRUCTION_DICT[line[0]][5]}"
-                    print(f"{opcode}_{rs}_{rt}_{rd}_{shamt}_{funct}", file = OUTPUT_FILE )
+                    print(f"{opcode}_{rs}_{rt}_{rd}_{shamt}_{funct} // {full_line} -> {i}", file = OUTPUT_FILE )
 
         else: 
             if len(line) != 4: 
@@ -58,7 +55,7 @@ def spit_line(line):
                 rt = f"{REGDICT[line[3]]:05b}"
                 shamt = f"{0:05b}"
                 funct=f"{INSTRUCTION_DICT[line[0]][5]}"
-                print(f"{opcode}_{rs}_{rt}_{rd}_{shamt}_{funct}", file = OUTPUT_FILE )
+                print(f"{opcode}_{rs}_{rt}_{rd}_{shamt}_{funct} // {full_line} -> {i}", file = OUTPUT_FILE )
 
     # I-type arithmetic instructions
 
@@ -69,8 +66,8 @@ def spit_line(line):
         else:
             rs = f"{REGDICT[line[2]]:05b}"
             rt = f"{REGDICT[line[1]]:05b}"
-            imm = f"{int(line[3]):016b}" 
-            print(f"{opcode}_{rs}_{rt}_{imm}", file = OUTPUT_FILE )
+            imm = two_comp(int(line[3]),16)
+            print(f"{opcode}_{rs}_{rt}_{imm} // {full_line} -> {i}", file = OUTPUT_FILE )
 
     # NOTI, SLAI, SRLI, SRAI
     elif opc >= 6 and opc < 10:
@@ -80,8 +77,8 @@ def spit_line(line):
         else:
             rs = f"{REGDICT[line[1]]:05b}"
             rt = f"{REGDICT[line[1]]:05b}"
-            imm = f"{int(line[2]):016b}" 
-            print(f"{opcode}_{rs}_{rt}_{imm}", file = OUTPUT_FILE )
+            imm = two_comp(int(line[2]),16)
+            print(f"{opcode}_{rs}_{rt}_{imm} // {full_line} -> {i}", file = OUTPUT_FILE )
 
     # BR                
     elif opc == 10:
@@ -91,8 +88,8 @@ def spit_line(line):
         else:
             rs = f"{0:05b}"
             rt = f"{0:05b}"
-            imm = f"{int(line[1]):016b}"
-            print(f"{opcode}_{rs}_{rt}_{imm}", file = OUTPUT_FILE )
+            imm = two_comp(int(line[1]),16)
+            print(f"{opcode}_{rs}_{rt}_{imm} // {full_line} -> {i}", file = OUTPUT_FILE )
 
     # BMI, BPL, BZ
     elif opc > 10 and opc < 14:
@@ -102,8 +99,8 @@ def spit_line(line):
         else:
             rs = f"{REGDICT[line[1]]:05b}"
             rt = f"{0:05b}"
-            imm = f"{int(line[2]):016b}"
-            print(f"{opcode}_{rs}_{rt}_{imm}", file = OUTPUT_FILE )
+            imm = two_comp(int(line[2]),16)
+            print(f"{opcode}_{rs}_{rt}_{imm} // {full_line} -> {i}", file = OUTPUT_FILE )
 
     # LD, ST, LDSP, STSP
     elif opc >= 14 and opc < 18:
@@ -113,8 +110,8 @@ def spit_line(line):
         else:
             rt = f"{REGDICT[line[1]]:05b}"
             rs = f"{REGDICT[line[2]]:05b}"
-            imm = f"{int(line[3]):016b}"
-            print(f"{opcode}_{rs}_{rt}_{imm}", file = OUTPUT_FILE )
+            imm = two_comp(int(line[3]),16)
+            print(f"{opcode}_{rs}_{rt}_{imm} // {full_line} -> {i}", file = OUTPUT_FILE )
 
     # MOVE 
     elif opc == 18:
@@ -125,7 +122,7 @@ def spit_line(line):
             rt = f"{REGDICT[line[1]]:05b}"
             rs = f"{REGDICT[line[2]]:05b}"
             imm = f"{0:016b}"
-            print(f"{opcode}_{rs}_{rt}_{imm}", file = OUTPUT_FILE )
+            print(f"{opcode}_{rs}_{rt}_{imm} // {full_line} -> {i}", file = OUTPUT_FILE )
 
     # PUSH
     elif opc == 19:
@@ -136,7 +133,7 @@ def spit_line(line):
             rs = f"{REGDICT[line[1]]:05b}"
             rt = f"{0:05b}"
             imm = f"{0:016b}"
-            print(f"{opcode}_{rs}_{rt}_{imm}", file = OUTPUT_FILE )
+            print(f"{opcode}_{rs}_{rt}_{imm} // {full_line} -> {i}", file = OUTPUT_FILE )
 
     # POP
     elif opc == 20:
@@ -147,7 +144,7 @@ def spit_line(line):
             rs = f"{REGDICT[line[1]]:05b}"
             rt = f"{0:05b}"
             imm = f"{0:016b}"
-            print(f"{opcode}_{rs}_{rt}_{imm}", file = OUTPUT_FILE )
+            print(f"{opcode}_{rs}_{rt}_{imm} // {full_line} -> {i}", file = OUTPUT_FILE )
 
     # CALL 
     elif opc == 21:
@@ -157,8 +154,8 @@ def spit_line(line):
         else:
             rs = f"{0:05b}"
             rt = f"{0:05b}"
-            imm = f"{int(line[1]):016b}"
-            print(f"{opcode}_{rs}_{rt}_{imm}", file = OUTPUT_FILE )
+            imm = two_comp(int(line[1]),16)
+            print(f"{opcode}_{rs}_{rt}_{imm} // {full_line} -> {i}", file = OUTPUT_FILE )
 
     # HALT, NOP, RET
     elif opc > 21 and opc < 25:
@@ -166,8 +163,8 @@ def spit_line(line):
             print(f"error in line {line}")
             return
         else:
-            imm = f"{0:016b}"
-            print(f"{opcode}_{imm}", file = OUTPUT_FILE )
+            imm = f"{0:026b}"
+            print(f"{opcode}_{imm} // {full_line} -> {i}", file = OUTPUT_FILE )
 
     return
 
@@ -179,17 +176,17 @@ def bin_comm(string):
 
 
 def process(filename):
-    print(f"{0:032b}", file = OUTPUT_FILE)
     with open(filename, 'r') as f:
         lines = f.readlines()
-        for line in lines:
+        for i, line in enumerate(lines):
             line.strip()
+            line = line.replace('\n','')
+            full_line = line
             line = bin_comm(line)
             
             line = line.replace(',',' ').replace(')',' ').replace('(',' ').split()
             if len(line):
-                spit_line(line)
-    print(f"{0:032b}", file = OUTPUT_FILE)
+                spit_line(line, full_line, i)
 
 if __name__ == '__main__':
     with open('instructions.json', 'r') as f:

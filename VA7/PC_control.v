@@ -4,7 +4,7 @@ module PC_control(BranchOp, StackOp, ALUout, regval, LMD, PCin, rst, clk, PCout)
     input [2:0] BranchOp;
     input [2:0] StackOp;
     input [31:0] ALUout;   // computed using ALU
-    input [31:0] regval;   // will get from opcode computation
+    input signed [31:0] regval;   // will get from opcode computation
     input [31:0] LMD;      // memory output
     input [31:0] PCin;
     input rst, clk;
@@ -23,6 +23,7 @@ module PC_control(BranchOp, StackOp, ALUout, regval, LMD, PCin, rst, clk, PCout)
             case (BranchOp)
                // 001 -> BR (unconditional branch)
                 3'b001: begin
+                    $display("BR: branching to %d from %d", ALUout, PCin);
                     PCout <= ALUout; 
                 end
 
@@ -49,6 +50,8 @@ module PC_control(BranchOp, StackOp, ALUout, regval, LMD, PCin, rst, clk, PCout)
                 3'b100: begin
                     // 100 -> BZ (branch if zero)
                     if (regval == 0) begin
+                        $display("BZ: branching to %d from %d", ALUout, PCin);
+                    
                         PCout <= ALUout;
                     end
                     else begin
@@ -71,7 +74,6 @@ module PC_control(BranchOp, StackOp, ALUout, regval, LMD, PCin, rst, clk, PCout)
 
                         // 011 -> CALL
                         3'b011: begin
-                            $display("case of CALL for PCin = %d", PCin);
                             PCout <= ALUout;
                         end
 

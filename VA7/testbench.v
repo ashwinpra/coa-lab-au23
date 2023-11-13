@@ -14,10 +14,6 @@ localparam CLK_PERIOD = 10;
 always #(CLK_PERIOD/2) clk=~clk;
 
 initial begin
-    $dumpfile("tb_ControlUnit.vcd");
-    $dumpvars(5, testbench);
-
-
     $display("Starting testbench");
     // #10 rst = 1;
     // #10 rst = 0;
@@ -25,7 +21,7 @@ initial begin
 
     // $monitor("out = %d", out);  
 
-    #100000
+    #100000000
     $finish;
 end
 

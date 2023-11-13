@@ -836,18 +836,46 @@ module control_unit(clk, opcode, BranchOp, ALUOp, ALUSrc, MemR, MemW, RegW, RegD
 
             // I-type move operation - implemented similar to ADDI (Rt = Rs + 0)
             MOVE: begin
-                BranchOp <= 3'b000;
-                ALUOp <= 4'b0001;
-                ALUSrc <= 1;
-                MemR <= 0;
-                MemW <= 0;
-                RegW <= 1;
-                MemtoReg <= 0;
-                RegDst <= 0;
-                StackOp <= 3'b000;
+                case(IS)
+                    0: begin
+                        BranchOp <= 3'b000;
+                        ALUOp <= 4'b0001;
+                        ALUSrc <= 1;
+                        MemR <= 0;
+                        MemW <= 0;
+                        MemtoReg <= 0;
+                        RegDst <= 0;
+                        StackOp <= 3'b000;
 
-                updatePC <= 1;
-                CS <= 0;
+                        IS <= 1;
+                    end 
+                    1: begin 
+                        // initiate register write
+                        RegW <= 1;
+
+                        IS <= 2;
+                    end
+                    2: begin 
+                        // finish register write
+                        RegW <= 0;
+
+                        updatePC <= 1;
+                        IS <= 0;
+                        CS <= 0;
+                    end
+                endcase
+                // BranchOp <= 3'b000;
+                // ALUOp <= 4'b0001;
+                // ALUSrc <= 1;
+                // MemR <= 0;
+                // MemW <= 0;
+                // RegW <= 1;
+                // MemtoReg <= 0;
+                // RegDst <= 0;
+                // StackOp <= 3'b000;
+
+                // updatePC <= 1;
+                // CS <= 0;
             end
 
             // I-type stack operations + RET (miscellaneous)

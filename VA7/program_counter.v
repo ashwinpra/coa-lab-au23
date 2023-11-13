@@ -1,6 +1,7 @@
 // Program counter module
 
-module program_counter(PCin, updatePC, reset, clk, PCout);
+module program_counter(ins, PCin, updatePC, reset, clk, PCout);
+    input [31:0] ins;
     input [31:0] PCin;
     input updatePC;
     input reset,clk;

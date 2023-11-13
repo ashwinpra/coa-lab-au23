@@ -17,7 +17,7 @@ module instruction_memory(addr, ins);
 	output reg [31:0] ins;
 
 	reg [31:0] mem [1023:0];
-
+	
 	initial begin
 		$readmemb("instructions_bin.txt", mem, 0, 1023);	
 	end

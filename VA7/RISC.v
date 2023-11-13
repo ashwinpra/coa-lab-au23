@@ -106,6 +106,7 @@ module risc(clk, rst, out, INT);
     );
 
     program_counter PC0 (
+        .ins(ins),
         .PCin(NPC),
         .clk(clk),
         .reset(rst),

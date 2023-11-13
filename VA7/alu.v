@@ -35,7 +35,7 @@ module alu (a,b,shamt,funct,clk,res);
 
     always @(posedge clk)
     begin
-        // $display("A = %d, B = %d, shamt = %d, funct = %d", a, b, shamt, funct);
+        // $display("A = %d, B = %d, shamt = %d, funct = %d, res = %d", a, b, shamt, funct, sla_out);
         case(funct)
             ADD: res <= add_out; 
             SUB: res <= sub_out;
@@ -120,20 +120,6 @@ module sla(a,b,shamt,out);
 endmodule
 
 module sra(a,b,shamt,out);
-    input signed [31:0] a;
-    input signed [31:0] b;
-    input signed [4:0] shamt;
-    output reg signed [31:0] out;
-
-    always @(a or b or shamt) begin
-        if (shamt)
-            out = a >>> shamt;
-        else
-            out = a >>> b[0];
-    end
-endmodule   
-
-module srl(a,b,shamt,out);
     input [31:0] a;
     input [31:0] b;
     input [4:0] shamt;
@@ -146,4 +132,18 @@ module srl(a,b,shamt,out);
             out = a >> b[0];
     end
 endmodule
+
+module srl(a,b,shamt,out);
+    input signed [31:0] a;
+    input signed [31:0] b;
+    input signed [4:0] shamt;
+    output reg signed [31:0] out;
+
+    always @(a or b or shamt) begin
+        if (shamt)
+            out = a >>> shamt;
+        else
+            out = a >>> b[0];
+    end
+endmodule   
 
